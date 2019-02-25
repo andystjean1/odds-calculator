@@ -1,46 +1,68 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+import statistics
 
 url="http://www.espn.com/nba/game?gameId=401071571"
 
-resp = requests.get(url)
-if(resp.status_code != 200):
-    print("bad status code bye ", resp.status_code)
-    quit()
 
-soup = BeautifulSoup(resp.content, 'html.parser')
+def get_over_under(soup):
+    scores = soup.find_all('td', attrs={'class':'score', 'colspan':'6'})
+    return int(re.search(r'\d\d\d', scores[1].text).group())
 
-scores = soup.find_all('td', attrs={'class':'score', 'colspan':'6'})
-over_under = scores[1]
+def get_average_scores(team):
+    #put inside for loop for each team
+    table = team.find('div', attrs={'class':'content'}).find('tbody')
+    name = team.find('header', attrs={'class':'bordered'})
+    name = re.search(r'^\w+ \w+ L|^\w+ L', name.text).group()[:-2]
 
-past_games = soup.find('div', attrs={'class':'tab-content sub-module__parallel'})
-teams = past_games.find_all('article')
+    scores=[]
 
-test = teams[1]
+    for tr in table:
+        data = tr.find_all('td')
+        score = data[-1].text
+        win_loss = score[0]
 
-table = test.find('div', attrs={'class':'content'}).find('tbody')
-name = test.find('header', attrs={'class':'border'})
+        cleaned_score = re.search(r'\d+-\d+', score[1:]).group()
 
+        totals = cleaned_score.split('-')
 
-scores=[]
+        totals = list(map(int, totals))
 
-for tr in table:
-    data = tr.find_all('td')
-    score = data[-1].text
-    win_loss = score[0]
-    totals = score[1:].split('-')
+        if(win_loss == 'W'):
+            scores.append(max(totals))
+        else:
+            scores.append(min(totals))
 
-    print(totals)
+    avg = statistics.mean(scores)
+    print(name, scores, avg)
+    return avg
 
+#MAIN METHOD
+if __name__ == "__main__":
+    resp = requests.get(url)
+    if(resp.status_code != 200):
+        print("bad status code bye ", resp.status_code)
+        quit()
 
+    soup = BeautifulSoup(resp.content, 'html.parser')
+    over_under = get_over_under(soup)
 
+    #find past 5 games
+    past_games = soup.find('div', attrs={'class':'tab-content sub-module__parallel'})
+    teams = past_games.find_all('article')
 
-    totals = list(map(int, totals))
+    total = 0.0
 
-    if(win_loss == 'W'):
-        scores.append(max(totals))
+    for t in teams:
+        total += get_average_scores(t)
+
+    print('Over/Under: ', over_under)
+    print('Total score: ', total)
+
+    if(total > over_under):
+        print("bet the over")
+    elif(total < over_under):
+        print('bet the under')
     else:
-        scores.append(min(totals))
-
-print(test.text[:13], scores)
+        print('its a push')
