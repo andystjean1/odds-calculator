@@ -1,9 +1,21 @@
+from selenium import webdriver
 import requests
 from bs4 import BeautifulSoup
 import re
 import statistics
 
-url="http://www.espn.com/nba/game?gameId=401071571"
+nba_url="http://www.espn.com/nba/"
+
+#get the list of todays games from espn
+def get_game_urls():
+    driver = webdriver.Chrome()
+    driver.get(nba_url)
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    driver.close()
+
+    scoreboard = soup.find('div', attrs={'class':'scoreboard active'})
+    game_urls = scoreboard.find_all('a', attrs={'class':'cscore_link'})
+    return [x['href'] for x in game_urls]
 
 
 def get_over_under(soup):
@@ -17,7 +29,6 @@ def get_team_name(team):
     name = team.find('header', attrs={'class':'bordered'})
     name = re.search(r'^\w+ \w+ L|^\w+ L', name.text).group()[:-2]
     return name
-
 
 def get_last_five_scores(team):
     #find the table and list each data row
@@ -59,9 +70,6 @@ def get_favorite(soup):
 
 #MAIN METHOD
 if __name__ == "__main__":
-
-    resp = requests.get(url)
-    soup = BeautifulSoup(resp.content, 'html.parser')
-
-    spread_line = get_favorite(soup)
-    print(spread_line)
+    urls = get_game_urls()
+    for u in urls:
+        print(u['href'])

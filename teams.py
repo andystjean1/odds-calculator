@@ -41,7 +41,7 @@ class Team(object):
         self.last_five_scores = lfs
 
     def display_team(self):
-        print(self.name, self.last_five_scores)
+        print(self.name, self.last_five_scores, statistics.mean(self.last_five_scores))
 
     def is_favorite(self, abv):
         return self.name == abbrevs[abv]
