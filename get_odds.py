@@ -10,13 +10,18 @@ def get_over_under(soup):
     scores = soup.find_all('td', attrs={'class':'score', 'colspan':'6'})
     return int(re.search(r'\d\d\d', scores[1].text).group())
 
-def get_average_scores(team):
+def get_team_name(team):
     #find the table and list each data row
     table = team.find('div', attrs={'class':'content'}).find('tbody')
-
     #find the name of the team
     name = team.find('header', attrs={'class':'bordered'})
     name = re.search(r'^\w+ \w+ L|^\w+ L', name.text).group()[:-2]
+    return name
+
+
+def get_last_five_scores(team):
+    #find the table and list each data row
+    table = team.find('div', attrs={'class':'content'}).find('tbody')
 
     scores=[]
     for tr in table:
@@ -36,10 +41,27 @@ def get_average_scores(team):
             scores.append(min(totals))
 
     #calculate the avergae of scores and return
-    avg = statistics.mean(scores)
-    print(name, scores, avg)
-    return avg
+    return scores
+
+#get the spread of the game from the main page
+def get_spread(soup):
+    teams = soup.find('div', attrs={'class':'competitors'})
+    line = teams.find('span', attrs={'class':'line'})
+    spread = line.text.split(' ')
+    return spread[1][1:]
+
+def get_favorite(soup):
+    teams = soup.find('div', attrs={'class':'competitors'})
+    line = teams.find('span', attrs={'class':'line'})
+    spread = line.text.split(' ')
+    return spread[0]
+
 
 #MAIN METHOD
 if __name__ == "__main__":
-    print("im the main in get_odds.py")
+
+    resp = requests.get(url)
+    soup = BeautifulSoup(resp.content, 'html.parser')
+
+    spread_line = get_favorite(soup)
+    print(spread_line)
