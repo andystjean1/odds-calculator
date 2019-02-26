@@ -34,3 +34,4 @@ if __name__ == '__main__':
 
 
     game.display_game()
+    game.check_over_under()

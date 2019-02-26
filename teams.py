@@ -1,4 +1,5 @@
 #holds the structure for a teams
+import statistics
 
 abbrevs= {
     "ATL":"Hawks",
@@ -44,3 +45,6 @@ class Team(object):
 
     def is_favorite(self, abv):
         return self.name == abbrevs[abv]
+
+    def calc_average_score(self):
+        return statistics.mean(self.last_five_scores)
