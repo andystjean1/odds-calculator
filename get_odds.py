@@ -19,8 +19,13 @@ def get_game_urls():
 
 
 def get_over_under(soup):
-    scores = soup.find_all('td', attrs={'class':'score', 'colspan':'6'})
-    return int(re.search(r'\d\d\d', scores[1].text).group())
+    #Check if scores is None
+    try:
+        scores = soup.find_all('td', attrs={'class':'score', 'colspan':'6'})
+        return int(re.search(r'\d\d\d', scores[1].text).group())
+    except IndexError:
+        print("I THINK THIS GAME HAS STARTED!!!")
+        return -1
 
 def get_team_name(team):
     #find the table and list each data row

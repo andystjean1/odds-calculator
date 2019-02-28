@@ -43,16 +43,19 @@ class Game(object):
             if(fav_total > dog_total):
                 print('Favorite: ', fav_total)
                 print('Underdog: ', dog_total)
+                print("Spread: ", self.spread)
                 print('bet to cover the spread')
 
             else:
                 print('Favorite: ', fav_total)
                 print('Underdog: ', dog_total)
+                print("Spread: ", self.spread)
                 print('bet against the spread')
 
         else: #favorite total is less than underdog total
             print('Favorite: ', fav_total)
             print('Underdog: ', dog_total)
+            print("Spread: ", self.spread)
             print('bet against the spread')
 
     #prints the game to the screen

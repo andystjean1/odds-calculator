@@ -30,7 +30,7 @@ abbrevs= {
     "SAC":"Kings",
     "SA":"Spurs",
     "TOR":"Raptors",
-    "UTA":"Jazz",
+    "UTAH":"Jazz",
     "WAS":"Wizards",
 }
 

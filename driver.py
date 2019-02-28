@@ -25,8 +25,11 @@ if __name__ == '__main__':
             quit()
 
         soup = BeautifulSoup(resp.content, 'html.parser')
-
         over_under = GO.get_over_under(soup)
+        if(over_under == -1):
+            print('skipping this game')
+            continue
+
         spread = GO.get_spread(soup)
         game = Game(over_under, spread)
 
